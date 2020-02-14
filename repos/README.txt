@@ -116,3 +116,178 @@ https://www.mongodb.com/products/compass
 https://docs.mongodb.com/manual/aggregation/
 
 
+
+//Commands
+Ensure that MongoDB is running before attempting to start the mongo shell.
+cd "C:\Program Files\MongoDB\Server\4.2\bin"
+
+if you do not specify a --dbpath, starting a MongoDB server on the C:\ drive stores all data files in C:\data\db.
+To start MongoDB using all defaults, issue the following command at the system shell:
+mongod
+
+To start MongoDB, run mongod.exe:
+mongod.exe --dbpath="c:\data\db"
+
+Local MongoDB Instance on Default Port
+You can run mongo shell without any command-line options to connect to a MongoDB instance running on your localhost with default port 27017:
+mongo
+
+//output
+MongoDB server version: 4.2.3
+//connecting to: mongodb://127.0.0.1:27017/?compressors=disabled&gssapiServiceName=mongodb
+//Implicit session: session { "id" : UUID("09407ae3-a607-435a-8d20-d32d678732e1") }
+
+Local MongoDB Instance on a Non-default Port:
+mongo --port 28015
+or
+mongod --port 12345
+
+MongoDB Instance with Authentication:
+mongo --username alice --password --authenticationDatabase admin --host mongodb0.examples.com --port 28015
+
+To run a mongod process as a daemon (i.e. fork), and write its output to a log file:
+mongod --fork --logpath /var/log/mongodb/mongod.log
+
+Shut down the mongod from the mongo shell using the db.shutdownServer() method as follows:
+use admin
+db.shutdownServer()
+
+Within the shell, db refers to your current database. Type db to display the current database:
+db
+
+To switch databases, type use <db>. For example, to switch to the examples database:
+use <database>
+
+Following creates both the database myNewDatabase and the collection myCollection during the insertOne() operation:
+use myNewDatabase
+db.myCollection.insertOne( { x: 1 } );
+
+MongoDB CRUD Operations
+
+Insert a Single Document:
+db.inventory.insertOne(
+   { item: "canvas", qty: 100, tags: ["cotton"], size: { h: 28, w: 35.5, uom: "cm" } }
+)
+
+To retrieve the document that you just inserted, query the collection:
+db.inventory.find( { item: "canvas" } )
+
+Insert Multiple Documents:
+db.inventory.insertMany([
+   { item: "journal", qty: 25, tags: ["blank", "red"], size: { h: 14, w: 21, uom: "cm" } },
+   { item: "mat", qty: 85, tags: ["gray"], size: { h: 27.9, w: 35.5, uom: "cm" } },
+   { item: "mousepad", qty: 25, tags: ["gel", "blue"], size: { h: 19, w: 22.85, uom: "cm" } }
+])
+
+To retrieve the inserted documents, query the collection:
+db.inventory.find( {} )
+
+Update a Single Document:
+db.inventory.updateOne(
+   { item: "paper" },
+   {
+     $set: { "size.uom": "cm", status: "P" },
+     $currentDate: { lastModified: true }
+   }
+)
+
+
+The following example deletes all documents from the inventory collection:
+db.inventory.deleteMany({})
+
+------------------------
+MongoDB Atlas for DBaas
+https://cloud.mongodb.com/v2/5e41ca27cf09a258ddf7be91#metrics/replicaSet/5e41cc0ff2a30b225de8778e/explorer
+
+MongoDB Compass for GUI
+https://www.mongodb.com/products/compass
+
+//ATLAS connection string for mongoDB Compass
+mongodb+srv://<username>:<password>@cluster0-x8po3.azure.mongodb.net/test
+
+//Local connection string for mongoDB Compass
+mongodb://127.0.0.1:27017/admin
+
+
+//Excersize
+
+use myNewDatabase
+
+db.Users.insertMany([
+   { name: "Tris", age: 8},
+   { name: "bps", age: 35},
+   { name: "SP", age: 30},
+])
+
+db.Users.find({})
+
+db.Users.find({name:"bps"})
+
+db.Users.update(
+   { _id: ObjectId("5e430a937fccba1fd6428f1f") },
+   {    
+     $set: {
+       name: "Trisha"
+     }
+   }
+)
+
+db.Users.remove({name:"SP"})
+
+---------------------------------
+//Node MondoDB project
+
+open VS code project and open folder where you want to pull
+Open Terminal
+
+>mongo
+
+>npm init
+>npm install mongodb
+>npm install mongodb@4.2
+
+>node app.js
+
+ctrl+C
+
+//Test harness
+
+
+//stored javascript
+//MongoDB doesn’t have an exact equivalent to stored procedures but it does offer a feature stored javascript that offers similar functionality
+
+//MongoDB provides a special collection on every database called system.js where you can put your custom javascript functions.
+>db.system.js.save({_id: "sum", value: function(x,y) { return x+y;}});
+WriteResult({ "nMatched" : 0, "nUpserted" : 1, "nModified" : 0, "_id" : "sum" })
+
+>db.test.save({x: 4, y: 2});
+WriteResult({ "nInserted" : 1 })
+>db.test.save({x: 4, y: 2});
+WriteResult({ "nInserted" : 1 })
+>db.test.save({x: 100, y: 2});
+WriteResult({ "nInserted" : 1 })
+
+> db.test.find({$where: "sum(this.x, this.y) == 6"});
+{ "_id" : ObjectId("5cf698db86d331b7a14adf38"), "x" : 4, "y" : 2 }
+{ "_id" : ObjectId("5cf698df86d331b7a14adf39"), "x" : 4, "y" : 2 }
+
+Viewing all stored procedures
+> db.system.js.find()
+{ "_id" : "sum", "value" : { "code" : "function (x,y) { return x+y;}" } }
+
+
+2
+> db.system.js.distinct("_id");
+[ "sum" ]
+
+
+//MongoDB Aggregation
+
+
+
+
+
+
+
+
+
